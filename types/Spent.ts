@@ -2,6 +2,7 @@ export interface Spent {
   subject: string;
   date: string;
   spent: string;
+  id: number;
 }
 
 export interface Month {

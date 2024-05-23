@@ -11,6 +11,7 @@ export default function SpentForm({ addSpent }: spentFormProps) {
     subject: "dildo",
     date: "tomorrow",
     spent: "0",
+    id: 4,
   } as Spent);
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
