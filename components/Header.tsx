@@ -1,26 +1,14 @@
 "use client";
 
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
-import { Switch } from "@nextui-org/react";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 
-export function ThemeSwitcher() {
-  const [mounted, setMounted] = useState(false);
-  const { theme, setTheme } = useTheme();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
-
-  function setIsSelected() {
-    if (theme === "dark") setTheme("light");
-    else setTheme("dark");
-  }
+export function Header() {
   return (
-    <div>
-      <Switch onValueChange={setIsSelected}>Light Mode</Switch>
+    <div className="border-1">
+      <div className="container mx-auto flex justify-between py-3">
+        header
+        <ThemeSwitcher />
+      </div>
     </div>
   );
 }
