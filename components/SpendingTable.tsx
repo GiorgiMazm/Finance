@@ -1,5 +1,4 @@
 "use client";
-import React from "react";
 import { Spent } from "@/types/Spent";
 import {
   Table,
@@ -10,16 +9,19 @@ import {
   TableCell,
 } from "@nextui-org/react";
 import { Tooltip } from "@mui/material";
+import { Key, useCallback } from "react";
 
 interface SpendingTableProps {
   spending: Spent[];
   columns: { key: string; label: string }[];
+  deleteBeiId: any;
 }
 export default function SpendingTable({
   spending,
   columns,
+  deleteBeiId,
 }: SpendingTableProps) {
-  const renderCell = React.useCallback((spent: Spent, columnKey: React.Key) => {
+  const renderCell = useCallback((spent: Spent, columnKey: Key) => {
     const cellValue = spent[columnKey as keyof Spent];
 
     switch (columnKey) {
@@ -32,18 +34,16 @@ export default function SpendingTable({
       case "actions":
         return (
           <div className="relative flex items-center gap-2">
-            <Tooltip content="Details" title="d">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                show
-              </span>
-            </Tooltip>
             <Tooltip content="Edit spending" title="h">
               <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
                 edit
               </span>
             </Tooltip>
             <Tooltip color="danger" content="Delete spending" title="Delete">
-              <span className="text-lg text-danger cursor-pointer active:opacity-50">
+              <span
+                onClick={() => deleteBeiId(spent.id)}
+                className="text-lg text-danger cursor-pointer active:opacity-50"
+              >
                 delete {spent.id}
               </span>
             </Tooltip>

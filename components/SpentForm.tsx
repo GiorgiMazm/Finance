@@ -6,22 +6,36 @@ import { Spent } from "@/types/Spent";
 interface spentFormProps {
   addSpent: (spent: Spent) => void;
 }
+
 export default function SpentForm({ addSpent }: spentFormProps) {
+  const [spendingCounter, setSpendingCounter] = useState(4);
   const [formData, setFormData] = useState({
-    subject: "dildo",
+    subject: "poison",
     date: "tomorrow",
     spent: "0",
-    id: 4,
+    id: spendingCounter,
   } as Spent);
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target;
-    console.log(name, value);
     setFormData({ ...formData, [name]: value });
   }
+
+  function handleAddSpent() {
+    const newSpent = { ...formData, id: spendingCounter };
+    addSpent(newSpent);
+    setSpendingCounter(spendingCounter + 1);
+    setFormData({
+      subject: "",
+      date: "",
+      spent: "",
+      id: spendingCounter + 1,
+    });
+  }
+
   return (
     <div className="border-1 p-4">
-      <div className=" pb-2 flex flex-wrap md:flex-nowrap gap-4 ">
+      <div className="pb-2 flex flex-wrap md:flex-nowrap gap-4">
         <Input
           value={formData.spent}
           onChange={handleChange}
@@ -44,7 +58,7 @@ export default function SpentForm({ addSpent }: spentFormProps) {
           name="date"
         />
       </div>
-      <Button onClick={() => addSpent(formData)} color="primary">
+      <Button onClick={handleAddSpent} color="primary">
         Add spent
       </Button>
     </div>
