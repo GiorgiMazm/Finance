@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { Spent } from "@/types/Spent";
 import SpentForm from "@/components/SpentForm";
 import SpendingTable from "@/components/SpendingTable";
@@ -56,11 +56,21 @@ export default function Home() {
     );
   }
 
+  function editSpent(event: ChangeEvent<HTMLInputElement>, id: number) {
+    const { name, value } = event.target;
+    setSpending((prevSpending) =>
+      prevSpending.map((spent) =>
+        spent.id === id ? { ...spent, [name]: value } : spent,
+      ),
+    );
+  }
+
   return (
     <>
       <h1>Finance overview</h1>
       <SpentForm addSpent={addSpent} />
       <SpendingTable
+        editSpent={editSpent}
         columns={columns}
         spending={spending}
         deleteBeiId={deleteBeiId}
