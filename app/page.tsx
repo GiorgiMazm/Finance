@@ -56,13 +56,8 @@ export default function Home() {
     );
   }
 
-  function editSpent(event: ChangeEvent<HTMLInputElement>, id: number) {
-    const { name, value } = event.target;
-    setSpending((prevSpending) =>
-      prevSpending.map((spent) =>
-        spent.id === id ? { ...spent, [name]: value } : spent,
-      ),
-    );
+  function editSpent(spent: Spent, id: number) {
+    console.log(spent, id);
   }
 
   return (
@@ -72,8 +67,8 @@ export default function Home() {
       <SpendingTable
         editSpent={editSpent}
         columns={columns}
-        spending={spending}
-        deleteBeiId={deleteBeiId}
+        spendingArray={spending}
+        onDelete={deleteBeiId}
       />
     </>
   );

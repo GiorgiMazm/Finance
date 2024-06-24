@@ -1,4 +1,3 @@
-"use client";
 import { Spent } from "@/types/Spent";
 import {
   Table,
@@ -9,123 +8,107 @@ import {
   TableCell,
   Input,
 } from "@nextui-org/react";
-import { Tooltip } from "@mui/material";
-import { ChangeEvent, Key, useCallback, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 
 interface SpendingTableProps {
-  spending: Spent[];
+  spendingArray: Spent[];
   columns: { key: string; label: string }[];
-  deleteBeiId: any;
-  editSpent: any;
+  onDelete: (id: number) => void;
+  editSpent: (spent: Spent, id: number) => void;
 }
+
 export default function SpendingTable({
-  spending,
+  spendingArray,
   columns,
-  deleteBeiId,
+  onDelete,
   editSpent,
 }: SpendingTableProps) {
-  function handleChange(event: ChangeEvent<HTMLInputElement>, id: number) {
-    editSpent(event, id);
+  const [editingId, setEditingId] = useState<number | null>(null);
+
+  const [spending, setSpending] = useState(spendingArray);
+
+  function onEdit(event: ChangeEvent<HTMLInputElement>, id: number) {
+    console.log(event, id);
+    const { name, value } = event.target;
+    setSpending((prevSpending) =>
+      prevSpending.map((spent) =>
+        spent.id === id ? { ...spent, [name]: value } : spent,
+      ),
+    );
   }
-  const [isVisible, setVisibility] = useState(false);
 
-  function handleEdit(id: number) {
-    setVisibility(!isVisible);
-    console.log(isVisible);
+  const handleEditClick = (id: number) => {
+    setEditingId(id);
+  };
+
+  function handleDelete(id: number) {
+    setSpending((prevSpending) =>
+      prevSpending.filter((spent) => spent.id !== id),
+    );
+    onDelete(id);
   }
 
-  const renderCell = useCallback((spent: Spent, columnKey: Key) => {
-    const cellValue = spent[columnKey as keyof Spent];
+  const handleSave = (id: number) => {
+    const spent = spending.find((spentItem) => spentItem.id === id);
+    if (!spent) return;
+    editSpent(spent, id);
+    setEditingId(null);
+  };
 
-    switch (columnKey) {
-      case "subject":
-        return (
-          <div>
-            {isVisible ? (
-              <Input
-                value={spent.subject}
-                onChange={(event) => handleChange(event, spent.id)}
-                placeholder="Enter on what you spent"
-                name="subject"
-              />
-            ) : (
-              <span>{spent.subject}</span>
-            )}
-          </div>
-        );
-      case "date":
-        return (
-          <div>
-            <span>{spent.date}</span>
-            <Input
-              value={spent.date}
-              onChange={(event) => handleChange(event, spent.id)}
-              placeholder="Enter when you spent"
-              name="date"
-            />
-          </div>
-        );
-      case "spent":
-        return (
-          <div>
-            <span>{spent.spent}</span>
-            <Input
-              value={spent.spent}
-              onChange={(event) => handleChange(event, spent.id)}
-              placeholder="Enter how much you spent"
-              name="spent"
-            />
-          </div>
-        );
-      case "actions":
-        return (
-          <div className="relative flex items-center gap-2">
-            <Tooltip content="Edit spending" title="h">
-              <span
-                onClick={() => handleEdit(spent.id)}
-                className="text-lg text-default-400 cursor-pointer active:opacity-50"
-              >
-                edit
-              </span>
-            </Tooltip>
-            <Tooltip color="danger" content="Delete spending" title="Delete">
-              <span
-                onClick={() => deleteBeiId(spent.id)}
-                className="text-lg text-danger cursor-pointer active:opacity-50"
-              >
-                delete {spent.id}
-              </span>
-            </Tooltip>
-          </div>
-        );
-      default:
-        return cellValue;
-    }
-  }, []);
+  const handleCancel = (id: number) => {
+    setSpending(spendingArray);
+    setEditingId(null);
+  };
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement>, id: number) => {
+    onEdit(event, id);
+  };
 
   return (
-    <>
-      <Table aria-label="Example table with custom cells">
-        <TableHeader columns={columns}>
-          {(column) => (
-            <TableColumn
-              key={column.key}
-              align={column.key === "actions" ? "center" : "start"}
-            >
-              {column.label}
-            </TableColumn>
-          )}
-        </TableHeader>
-        <TableBody items={spending}>
-          {(item) => (
-            <TableRow key={item.id}>
-              {(columnKey) => (
-                <TableCell>{renderCell(item, columnKey)}</TableCell>
-              )}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </>
+    <Table aria-label="Spending table">
+      <TableHeader>
+        {columns.map((column) => (
+          <TableColumn key={column.key}>{column.label}</TableColumn>
+        ))}
+      </TableHeader>
+      <TableBody>
+        {spending.map((item) => (
+          <TableRow key={item.id}>
+            {columns.map((column) => (
+              <TableCell key={column.key}>
+                {editingId === item.id && column.key !== "actions" ? (
+                  <Input
+                    value={item[column.key as keyof Spent] as string}
+                    name={column.key} // Added name attribute
+                    onChange={(event) => handleChange(event, item.id)}
+                    placeholder={`Enter ${column.label.toLowerCase()}`}
+                  />
+                ) : column.key === "actions" ? (
+                  editingId === item.id ? (
+                    <>
+                      <button onClick={() => handleSave(item.id)}>Save</button>
+                      <button onClick={() => handleCancel(item.id)}>
+                        Cancel
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button onClick={() => handleEditClick(item.id)}>
+                        Edit
+                      </button>
+                      <button onClick={() => handleDelete(item.id)}>
+                        Delete
+                      </button>
+                    </>
+                  )
+                ) : (
+                  <span>{item[column.key as keyof Spent]}</span>
+                )}
+              </TableCell>
+            ))}
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 }
