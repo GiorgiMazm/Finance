@@ -9,44 +9,30 @@ import {
   Input,
 } from "@nextui-org/react";
 import { ChangeEvent, useState } from "react";
+import { Button } from "@nextui-org/button";
 
 interface SpendingTableProps {
-  spendingArray: Spent[];
+  spending: Spent[];
   columns: { key: string; label: string }[];
   onDelete: (id: number) => void;
   editSpent: (spent: Spent, id: number) => void;
+  onEdit: (event: ChangeEvent<HTMLInputElement>, id: number) => void;
+  cancelSpentEdit: () => void;
 }
 
 export default function SpendingTable({
-  spendingArray,
+  spending,
   columns,
   onDelete,
   editSpent,
+  onEdit,
+  cancelSpentEdit,
 }: SpendingTableProps) {
   const [editingId, setEditingId] = useState<number | null>(null);
-
-  const [spending, setSpending] = useState(spendingArray);
-
-  function onEdit(event: ChangeEvent<HTMLInputElement>, id: number) {
-    console.log(event, id);
-    const { name, value } = event.target;
-    setSpending((prevSpending) =>
-      prevSpending.map((spent) =>
-        spent.id === id ? { ...spent, [name]: value } : spent,
-      ),
-    );
-  }
 
   const handleEditClick = (id: number) => {
     setEditingId(id);
   };
-
-  function handleDelete(id: number) {
-    setSpending((prevSpending) =>
-      prevSpending.filter((spent) => spent.id !== id),
-    );
-    onDelete(id);
-  }
 
   const handleSave = (id: number) => {
     const spent = spending.find((spentItem) => spentItem.id === id);
@@ -55,8 +41,8 @@ export default function SpendingTable({
     setEditingId(null);
   };
 
-  const handleCancel = (id: number) => {
-    setSpending(spendingArray);
+  const handleCancel = () => {
+    cancelSpentEdit();
     setEditingId(null);
   };
 
@@ -86,19 +72,23 @@ export default function SpendingTable({
                 ) : column.key === "actions" ? (
                   editingId === item.id ? (
                     <>
-                      <button onClick={() => handleSave(item.id)}>Save</button>
-                      <button onClick={() => handleCancel(item.id)}>
-                        Cancel
-                      </button>
+                      <Button
+                        className="mr-3"
+                        onClick={() => handleSave(item.id)}
+                      >
+                        Save
+                      </Button>
+                      <Button onClick={handleCancel}>Cancel</Button>
                     </>
                   ) : (
                     <>
-                      <button onClick={() => handleEditClick(item.id)}>
+                      <Button
+                        className="mr-3"
+                        onClick={() => handleEditClick(item.id)}
+                      >
                         Edit
-                      </button>
-                      <button onClick={() => handleDelete(item.id)}>
-                        Delete
-                      </button>
+                      </Button>
+                      <Button onClick={() => onDelete(item.id)}>Delete</Button>
                     </>
                   )
                 ) : (
