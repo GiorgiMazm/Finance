@@ -8,19 +8,19 @@ export default function Home() {
   const spendingArray: Spent[] = [
     {
       subject: "Apartment",
-      date: "01.05.2024",
+      date: "2024-05-01",
       spent: "800",
       id: 1,
     },
     {
       subject: "Gym membership",
-      date: "01.05.2024",
+      date: "2024-05-01",
       spent: "25",
       id: 2,
     },
     {
       subject: "Food for whole week",
-      date: "03.05.2024",
+      date: "2024-05-01",
       spent: "50",
       id: 3,
     },
@@ -86,7 +86,6 @@ export default function Home() {
   return (
     <>
       <h1>Finance overview</h1>
-      <SpentForm addSpent={addSpent} />
       <SpendingTable
         onEdit={onEdit}
         editSpent={editSpent}
@@ -95,6 +94,7 @@ export default function Home() {
         onDelete={deleteBeiId}
         cancelSpentEdit={cancelSpentEdit}
       />
+      <SpentForm addSpent={addSpent} />
     </>
   );
 }

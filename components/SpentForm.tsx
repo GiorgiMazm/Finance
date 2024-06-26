@@ -1,7 +1,8 @@
 import { ChangeEvent, useState } from "react";
 import { Button } from "@nextui-org/button";
-import { Input } from "@nextui-org/react";
+import { DatePicker, Input } from "@nextui-org/react";
 import { Spent } from "@/types/Spent";
+import { DateValue, parseDate } from "@internationalized/date";
 
 interface spentFormProps {
   addSpent: (spent: Spent) => void;
@@ -11,7 +12,7 @@ export default function SpentForm({ addSpent }: spentFormProps) {
   const [spendingCounter, setSpendingCounter] = useState(4);
   const [formData, setFormData] = useState({
     subject: "poison",
-    date: "tomorrow",
+    date: "2024-06-25",
     spent: "0",
     id: spendingCounter,
   } as Spent);
@@ -27,10 +28,14 @@ export default function SpentForm({ addSpent }: spentFormProps) {
     setSpendingCounter(spendingCounter + 1);
     setFormData({
       subject: "",
-      date: "",
+      date: "2024-06-26",
       spent: "",
       id: spendingCounter + 1,
     });
+  }
+
+  function handeDataPick(date: DateValue) {
+    setFormData({ ...formData, date: date.toString() });
   }
 
   return (
@@ -50,11 +55,10 @@ export default function SpentForm({ addSpent }: spentFormProps) {
           placeholder="Enter on what you spent"
           name="subject"
         />
-        <Input
-          onChange={handleChange}
-          value={formData.date}
+        <DatePicker
+          onChange={handeDataPick}
+          value={parseDate(formData.date)}
           label="Spending date"
-          placeholder="Enter when you spent"
           name="date"
         />
       </div>

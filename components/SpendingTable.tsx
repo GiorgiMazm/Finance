@@ -7,6 +7,7 @@ import {
   TableRow,
   TableCell,
   Input,
+  DatePicker,
 } from "@nextui-org/react";
 import { ChangeEvent, useState } from "react";
 import { Button } from "@nextui-org/button";
@@ -64,6 +65,7 @@ export default function SpendingTable({
               <TableCell key={column.key}>
                 {editingId === item.id && column.key !== "actions" ? (
                   <Input
+                    className="w-full"
                     value={item[column.key as keyof Spent] as string}
                     name={column.key} // Added name attribute
                     onChange={(event) => handleChange(event, item.id)}
@@ -92,7 +94,9 @@ export default function SpendingTable({
                     </>
                   )
                 ) : (
-                  <span>{item[column.key as keyof Spent]}</span>
+                  <div className="w-[200px]">
+                    {item[column.key as keyof Spent].toString()}
+                  </div>
                 )}
               </TableCell>
             ))}
