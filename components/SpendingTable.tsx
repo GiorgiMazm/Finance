@@ -94,6 +94,12 @@ export default function SpendingTable({
               name="spent"
               onChange={(event) => handleChange(event, spent.id)}
               placeholder={`Enter`}
+              type="number"
+              startContent={
+                <div className="pointer-events-none flex items-center">
+                  <span className="text-default-400 text-small">€</span>
+                </div>
+              }
             />
           );
         } else return cellValue;

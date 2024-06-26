@@ -11,9 +11,9 @@ interface spentFormProps {
 export default function SpentForm({ addSpent }: spentFormProps) {
   const [spendingCounter, setSpendingCounter] = useState(4);
   const [formData, setFormData] = useState({
-    subject: "poison",
+    subject: "Poison",
     date: "2024-06-25",
-    spent: "0",
+    spent: "10",
     id: spendingCounter,
   } as Spent);
 
@@ -43,10 +43,16 @@ export default function SpentForm({ addSpent }: spentFormProps) {
       <div className="pb-2 flex flex-wrap md:flex-nowrap gap-4">
         <Input
           value={formData.spent}
+          type="number"
           onChange={handleChange}
           label="Amount of money"
           placeholder="Enter how much you spent"
           name="spent"
+          startContent={
+            <div className="pointer-events-none flex items-center">
+              <span className="text-default-400 text-small">€</span>
+            </div>
+          }
         />
         <Input
           onChange={handleChange}
