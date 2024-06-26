@@ -1,8 +1,9 @@
 "use client";
 import React, { ChangeEvent, useState } from "react";
 import { Spent } from "@/types/Spent";
-import SpentForm from "@/components/SpentForm";
+import { DateValue } from "@internationalized/date";
 import SpendingTable from "@/components/SpendingTable";
+import SpentForm from "@/components/SpentForm";
 
 export default function Home() {
   const spendingArray: Spent[] = [
@@ -74,15 +75,28 @@ export default function Home() {
     setSpending(globalSpending);
   }
 
-  function onEdit(event: ChangeEvent<HTMLInputElement>, id: number) {
-    console.log(event, id);
-    const { name, value } = event.target;
-    setSpending((prevSpending) =>
-      prevSpending.map((spent) =>
-        spent.id === id ? { ...spent, [name]: value } : spent,
-      ),
-    );
+  function onEdit(
+    event: ChangeEvent<HTMLInputElement> | DateValue,
+    id: number,
+  ) {
+    if ("target" in event) {
+      const { name, value } = event.target;
+      console.log(value);
+
+      setSpending((prevSpending) =>
+        prevSpending.map((spent) =>
+          spent.id === id ? { ...spent, [name]: value } : spent,
+        ),
+      );
+    } else {
+      setSpending((prevSpending) =>
+        prevSpending.map((spent) =>
+          spent.id === id ? { ...spent, date: event.toString() } : spent,
+        ),
+      );
+    }
   }
+
   return (
     <>
       <h1>Finance overview</h1>
