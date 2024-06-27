@@ -1,6 +1,6 @@
 "use client";
 import React, { ChangeEvent, useState } from "react";
-import { Spent } from "@/types/Spent";
+import { Spent, SpentCategory } from "@/types/Spent";
 import { DateValue } from "@internationalized/date";
 import SpendingTable from "@/components/SpendingTable";
 import SpentForm from "@/components/SpentForm";
@@ -12,18 +12,21 @@ export default function Home() {
       date: "2024-05-01",
       spent: "800",
       id: 1,
+      category: SpentCategory[0],
     },
     {
       subject: "Gym membership",
       date: "2024-05-01",
       spent: "25",
       id: 2,
+      category: SpentCategory[2],
     },
     {
       subject: "Food for whole week",
       date: "2024-05-01",
       spent: "50",
       id: 3,
+      category: SpentCategory[1],
     },
   ];
 
@@ -44,6 +47,10 @@ export default function Home() {
     {
       key: "spent",
       label: "Spent",
+    },
+    {
+      key: "category",
+      label: "Category",
     },
     {
       key: "actions",
@@ -97,6 +104,16 @@ export default function Home() {
     }
   }
 
+  function onSelect(event: ChangeEvent<HTMLSelectElement>, id: number) {
+    const value = event.target.value;
+    if (!value) return;
+    setSpending((prevSpending) =>
+      prevSpending.map((spent) =>
+        spent.id === id ? { ...spent, category: value } : spent,
+      ),
+    );
+  }
+
   return (
     <>
       <h1>Finance overview</h1>
@@ -107,6 +124,7 @@ export default function Home() {
         spending={spending}
         onDelete={deleteBeiId}
         cancelSpentEdit={cancelSpentEdit}
+        onSelect={onSelect}
       />
       <SpentForm addSpent={addSpent} />
     </>

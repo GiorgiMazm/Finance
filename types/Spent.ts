@@ -3,6 +3,7 @@ export interface Spent {
   date: string;
   spent: string;
   id: number;
+  category: string;
 }
 
 export interface Month {
@@ -10,3 +11,5 @@ export interface Month {
   name: string;
   sum: number;
 }
+
+export const SpentCategory = ["FOOD", "FLAT", "SPORT"];

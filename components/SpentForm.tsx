@@ -1,9 +1,8 @@
 import { ChangeEvent, useState } from "react";
 import { Button } from "@nextui-org/button";
-import { DatePicker, Input } from "@nextui-org/react";
-import { Spent } from "@/types/Spent";
+import { DatePicker, Input, Select, SelectItem } from "@nextui-org/react";
+import { Spent, SpentCategory } from "@/types/Spent";
 import { DateValue, parseDate } from "@internationalized/date";
-
 interface spentFormProps {
   addSpent: (spent: Spent) => void;
 }
@@ -14,8 +13,9 @@ export default function SpentForm({ addSpent }: spentFormProps) {
     subject: "Poison",
     date: "2024-06-25",
     spent: "10",
+    category: SpentCategory[0],
     id: spendingCounter,
-  } as Spent);
+  });
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target;
@@ -31,9 +31,14 @@ export default function SpentForm({ addSpent }: spentFormProps) {
       date: "2024-06-26",
       spent: "",
       id: spendingCounter + 1,
+      category: SpentCategory[1],
     });
   }
-
+  function onSelect(event: ChangeEvent<HTMLSelectElement>) {
+    const value = event.target.value;
+    if (!value) return;
+    setFormData({ ...formData, category: value });
+  }
   function handeDataPick(date: DateValue) {
     setFormData({ ...formData, date: date.toString() });
   }
@@ -67,6 +72,19 @@ export default function SpentForm({ addSpent }: spentFormProps) {
           label="Spending date"
           name="date"
         />
+        <Select
+          label="Spent Category"
+          placeholder="Select a category"
+          className="max-w-xs"
+          onChange={onSelect}
+          selectedKeys={[formData.category]}
+        >
+          {SpentCategory.map((category, index) => (
+            <SelectItem key={category} value={category}>
+              {category}
+            </SelectItem>
+          ))}
+        </Select>
       </div>
       <Button onClick={handleAddSpent} color="primary">
         Add spent

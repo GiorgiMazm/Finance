@@ -1,4 +1,4 @@
-import { Spent } from "@/types/Spent";
+import { Spent, SpentCategory } from "@/types/Spent";
 import {
   Table,
   TableHeader,
@@ -8,6 +8,8 @@ import {
   TableCell,
   Input,
   DatePicker,
+  Select,
+  SelectItem,
 } from "@nextui-org/react";
 import React, { ChangeEvent, useState } from "react";
 import { Button } from "@nextui-org/button";
@@ -23,6 +25,7 @@ interface SpendingTableProps {
     id: number,
   ) => void;
   cancelSpentEdit: () => void;
+  onSelect: (event: ChangeEvent<HTMLSelectElement>, id: number) => void;
 }
 
 export default function SpendingTable({
@@ -32,6 +35,7 @@ export default function SpendingTable({
   editSpent,
   onEdit,
   cancelSpentEdit,
+  onSelect,
 }: SpendingTableProps) {
   const [editingId, setEditingId] = useState<number | null>(null);
 
@@ -103,6 +107,25 @@ export default function SpendingTable({
             />
           );
         } else return cellValue;
+
+      case "category":
+        if (editingId === spent.id) {
+          return (
+            <Select
+              label="Spent Category"
+              placeholder="Select a category"
+              className="max-w-xs"
+              onChange={(event) => onSelect(event, spent.id)}
+              selectedKeys={[spent.category]}
+            >
+              {SpentCategory.map((category) => (
+                <SelectItem key={category} value={category}>
+                  {category}
+                </SelectItem>
+              ))}
+            </Select>
+          );
+        } else return cellValue;
       case "actions":
         if (editingId === spent.id) {
           return (
@@ -141,7 +164,7 @@ export default function SpendingTable({
         {spending.map((item) => (
           <TableRow key={item.id}>
             {columns.map((column) => (
-              <TableCell key={column.key}>
+              <TableCell className="w-[200px]" key={column.key}>
                 {renderCell(item, column.key)}
               </TableCell>
             ))}
