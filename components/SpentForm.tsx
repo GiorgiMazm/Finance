@@ -2,7 +2,12 @@ import { ChangeEvent, useState } from "react";
 import { Button } from "@nextui-org/button";
 import { DatePicker, Input, Select, SelectItem } from "@nextui-org/react";
 import { Spent, SpentCategory } from "@/types/Spent";
-import { DateValue, parseDate } from "@internationalized/date";
+import {
+  DateValue,
+  parseDate,
+  today,
+  getLocalTimeZone,
+} from "@internationalized/date";
 interface spentFormProps {
   addSpent: (spent: Spent) => void;
 }
@@ -11,7 +16,7 @@ export default function SpentForm({ addSpent }: spentFormProps) {
   const [spendingCounter, setSpendingCounter] = useState(4);
   const [formData, setFormData] = useState({
     subject: "Poison",
-    date: "2024-06-25",
+    date: today(getLocalTimeZone()).toString(),
     spent: "10",
     category: SpentCategory[0],
     id: spendingCounter,
@@ -27,9 +32,9 @@ export default function SpentForm({ addSpent }: spentFormProps) {
     addSpent(newSpent);
     setSpendingCounter(spendingCounter + 1);
     setFormData({
-      subject: "",
-      date: "2024-06-26",
-      spent: "",
+      subject: "Groceries",
+      date: today(getLocalTimeZone()).toString(),
+      spent: "20",
       id: spendingCounter + 1,
       category: SpentCategory[1],
     });
@@ -79,7 +84,7 @@ export default function SpentForm({ addSpent }: spentFormProps) {
           onChange={onSelect}
           selectedKeys={[formData.category]}
         >
-          {SpentCategory.map((category, index) => (
+          {SpentCategory.map((category) => (
             <SelectItem key={category} value={category}>
               {category}
             </SelectItem>

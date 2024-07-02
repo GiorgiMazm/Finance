@@ -36,6 +36,8 @@ export default function Home() {
 
   const [spending, setSpending] = useState(globalSpending);
 
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+
   const columns = [
     {
       key: "subject",
@@ -60,8 +62,10 @@ export default function Home() {
   ];
 
   function addSpent(spent: Spent) {
-    setSpending([...spending, spent]);
-    setGlobalSpending([...spending, spent]);
+    if (parseInt(spent.date.split("-")[1]) === selectedMonth) {
+      setSpending([...spending, spent]);
+    }
+    setGlobalSpending([...globalSpending, spent]);
   }
 
   function deleteBeiId(id: number) {
@@ -74,13 +78,16 @@ export default function Home() {
     );
   }
 
-  function editSpent(spent: Spent, id: number) {
-    console.log(spent, id);
-    setGlobalSpending(spending);
+  function editSpent(updatedSpent: Spent, id: number) {
+    const index = globalSpending.findIndex((spent) => spent.id === id);
+
+    const newSpending = [...globalSpending];
+    newSpending[index] = updatedSpent;
+    setGlobalSpending(newSpending);
   }
 
   function cancelSpentEdit() {
-    setSpending(globalSpending);
+    filterSpents(selectedMonth);
   }
 
   function onEdit(
@@ -89,7 +96,6 @@ export default function Home() {
   ) {
     if ("target" in event) {
       const { name, value } = event.target;
-      console.log(value);
 
       setSpending((prevSpending) =>
         prevSpending.map((spent) =>
@@ -122,10 +128,8 @@ export default function Home() {
     });
 
     setSpending(filteredSpents);
+    setSelectedMonth(month);
   }
-
-  //        <Button onClick={() => filterSpents(6)}>June</Button>
-  //         <Button onClick={() => filterSpents(7)}>Jule</Button>
   return (
     <>
       <h1>Finance overview</h1>
