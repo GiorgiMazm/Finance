@@ -10,6 +10,10 @@ import {
   DatePicker,
   Select,
   SelectItem,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
 } from "@nextui-org/react";
 import React, { ChangeEvent, useState } from "react";
 import { Button } from "@nextui-org/button";
@@ -26,6 +30,7 @@ interface SpendingTableProps {
   ) => void;
   cancelSpentEdit: () => void;
   onSelect: (event: ChangeEvent<HTMLSelectElement>, id: number) => void;
+  filterFunction: (filter: string[]) => void;
 }
 
 export default function SpendingTable({
@@ -36,6 +41,7 @@ export default function SpendingTable({
   onEdit,
   cancelSpentEdit,
   onSelect,
+  filterFunction,
 }: SpendingTableProps) {
   const [editingId, setEditingId] = useState<number | null>(null);
 
@@ -106,7 +112,7 @@ export default function SpendingTable({
               }
             />
           );
-        } else return cellValue;
+        } else return `${cellValue}€`;
 
       case "category":
         if (editingId === spent.id) {
@@ -153,11 +159,55 @@ export default function SpendingTable({
     }
   }
 
+  const [selectedKeys, setSelectedKeys] = React.useState(new Set(["all"]));
+
+  const selectedValue = React.useMemo(() => {
+    let keysArray = Array.from(selectedKeys);
+
+    if (selectedKeys.size > 1 && keysArray.includes("all")) {
+      if (keysArray[0] === "all") {
+        keysArray = keysArray.slice(1);
+        setSelectedKeys(new Set(keysArray));
+      } else {
+        keysArray = ["all"];
+        setSelectedKeys(new Set(["all"]));
+      }
+    }
+    filterFunction(keysArray);
+    return keysArray.join(", ").replaceAll("_", " ");
+  }, [selectedKeys]);
+
   return (
     <Table aria-label="Spending table">
       <TableHeader>
         {columns.map((column) => (
-          <TableColumn key={column.key}>{column.label}</TableColumn>
+          <TableColumn key={column.key}>
+            {column.key === "category" ? (
+              <Dropdown>
+                <DropdownTrigger>
+                  <Button variant="bordered" className="capitalize">
+                    {selectedValue}
+                  </Button>
+                </DropdownTrigger>
+                <DropdownMenu
+                  aria-label="Multiple selection example"
+                  variant="flat"
+                  closeOnSelect={false}
+                  disallowEmptySelection
+                  selectionMode="multiple"
+                  selectedKeys={selectedKeys}
+                  onSelectionChange={(h: any) => setSelectedKeys(h)}
+                >
+                  <DropdownItem key="all">All</DropdownItem>
+                  <DropdownItem key="food">Food</DropdownItem>
+                  <DropdownItem key="flat">Flat</DropdownItem>
+                  <DropdownItem key="sport">Sport</DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            ) : (
+              column.label
+            )}
+          </TableColumn>
         ))}
       </TableHeader>
       <TableBody>

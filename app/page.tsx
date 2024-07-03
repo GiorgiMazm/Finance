@@ -61,6 +61,10 @@ export default function Home() {
     },
   ];
 
+  function calculateSum() {
+    return spending.reduce((acc, spent) => acc + parseInt(spent.spent), 0);
+  }
+
   function addSpent(spent: Spent) {
     if (parseInt(spent.date.split("-")[1]) === selectedMonth) {
       setSpending([...spending, spent]);
@@ -130,11 +134,28 @@ export default function Home() {
     setSpending(filteredSpents);
     setSelectedMonth(month);
   }
+
+  function filterFunction(filter: string[]) {
+    console.log(filter);
+    if (filter.includes("all")) {
+      filterSpents(selectedMonth);
+      return;
+    }
+
+    const filteredSpents = globalSpending.filter((spent) => {
+      return parseInt(spent.date.split("-")[1]) === selectedMonth;
+    });
+    const hui = filteredSpents.filter((spent) =>
+      filter.includes(spent.category.toLowerCase()),
+    );
+    setSpending(hui);
+  }
   return (
     <>
       <h1>Finance overview</h1>
       <div>
         <MonthPicker filterSpents={filterSpents} />
+        In this month you spent: {calculateSum()}€
       </div>
       <SpendingTable
         onEdit={onEdit}
@@ -144,6 +165,7 @@ export default function Home() {
         onDelete={deleteBeiId}
         cancelSpentEdit={cancelSpentEdit}
         onSelect={onSelect}
+        filterFunction={filterFunction}
       />
       <SpentForm addSpent={addSpent} />
     </>
