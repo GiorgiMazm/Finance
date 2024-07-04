@@ -1,0 +1,47 @@
+{
+  "spendings": [
+    {
+      "subject": "Apartment",
+      "date": "2024-06-01",
+      "spent": "800",
+      "id": 1,
+      "category": "FlAT"
+    },
+    {
+      "subject": "Gym membership",
+      "date": "2024-07-01",
+      "spent": "25",
+      "id": 2,
+      "category": "SPORT"
+    },
+    {
+      "subject": "Food for whole week",
+      "date": "2024-06-01",
+      "spent": "50",
+      "id": 3,
+      "category": "FOOD"
+    }
+  ],
+  "columns": [
+    {
+      "key": "subject",
+      "label": "Subject"
+    },
+    {
+      "key": "date",
+      "label": "Date"
+    },
+    {
+      "key": "spent",
+      "label": "Spent"
+    },
+    {
+      "key": "category",
+      "label": "Category"
+    },
+    {
+      "key": "actions",
+      "label": "Actions"
+    }
+  ]
+}

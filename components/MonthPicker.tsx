@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 
-export default function MonthPicker({ filterSpents }: { filterSpents: any }) {
+export default function MonthPicker({
+  filterSpents,
+  setSelectedKeys,
+}: {
+  filterSpents: any;
+  setSelectedKeys: any;
+}) {
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const months = [
     "January",
@@ -18,7 +24,8 @@ export default function MonthPicker({ filterSpents }: { filterSpents: any }) {
   ];
 
   useEffect(() => {
-    filterSpents(month);
+    filterSpents(month, ["all"]);
+    setSelectedKeys(new Set(["all"]));
   }, [month]);
 
   const handlePreviousMonth = () => {

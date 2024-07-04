@@ -31,6 +31,8 @@ interface SpendingTableProps {
   cancelSpentEdit: () => void;
   onSelect: (event: ChangeEvent<HTMLSelectElement>, id: number) => void;
   filterFunction: (filter: string[]) => void;
+  selectedKeys: Set<string>;
+  setSelectedKeys: any;
 }
 
 export default function SpendingTable({
@@ -42,6 +44,8 @@ export default function SpendingTable({
   cancelSpentEdit,
   onSelect,
   filterFunction,
+  selectedKeys,
+  setSelectedKeys,
 }: SpendingTableProps) {
   const [editingId, setEditingId] = useState<number | null>(null);
 
@@ -158,8 +162,6 @@ export default function SpendingTable({
         return cellValue;
     }
   }
-
-  const [selectedKeys, setSelectedKeys] = React.useState(new Set(["all"]));
 
   const selectedValue = React.useMemo(() => {
     let keysArray = Array.from(selectedKeys);

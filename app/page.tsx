@@ -1,69 +1,25 @@
 "use client";
 import React, { ChangeEvent, useState } from "react";
-import { Spent, SpentCategory } from "@/types/Spent";
+import { Spent } from "@/types/Spent";
 import { DateValue } from "@internationalized/date";
 import SpendingTable from "@/components/SpendingTable";
 import SpentForm from "@/components/SpentForm";
 import MonthPicker from "@/components/MonthPicker";
+import {
+  calculateMonthSum,
+  filterSpentPerCategory,
+  filterSpentPerMonth,
+} from "@/utils/utils";
+import spendingData from "@/spendingData.json";
 
 export default function Home() {
-  const spendingArray: Spent[] = [
-    {
-      subject: "Apartment",
-      date: "2024-06-01",
-      spent: "800",
-      id: 1,
-      category: SpentCategory[0],
-    },
-    {
-      subject: "Gym membership",
-      date: "2024-07-01",
-      spent: "25",
-      id: 2,
-      category: SpentCategory[2],
-    },
-    {
-      subject: "Food for whole week",
-      date: "2024-06-01",
-      spent: "50",
-      id: 3,
-      category: SpentCategory[1],
-    },
-  ];
+  const spendingArray: Spent[] = spendingData.spendings;
 
   // in future globalSpending should be data from store or database
   const [globalSpending, setGlobalSpending] = useState(spendingArray);
-
   const [spending, setSpending] = useState(globalSpending);
-
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
-
-  const columns = [
-    {
-      key: "subject",
-      label: "Subject",
-    },
-    {
-      key: "date",
-      label: "Date",
-    },
-    {
-      key: "spent",
-      label: "Spent",
-    },
-    {
-      key: "category",
-      label: "Category",
-    },
-    {
-      key: "actions",
-      label: "Actions",
-    },
-  ];
-
-  function calculateSum() {
-    return spending.reduce((acc, spent) => acc + parseInt(spent.spent), 0);
-  }
+  const columns = spendingData.columns;
 
   function addSpent(spent: Spent) {
     if (parseInt(spent.date.split("-")[1]) === selectedMonth) {
@@ -90,8 +46,9 @@ export default function Home() {
     setGlobalSpending(newSpending);
   }
 
+  const [selectedKeys, setSelectedKeys] = React.useState(new Set(["all"]));
   function cancelSpentEdit() {
-    filterSpents(selectedMonth);
+    filterSpents(selectedMonth, Array.from(selectedKeys));
   }
 
   function onEdit(
@@ -125,37 +82,35 @@ export default function Home() {
     );
   }
 
-  function filterSpents(month: number) {
-    console.log(month);
-    const filteredSpents = globalSpending.filter((spent) => {
-      return parseInt(spent.date.split("-")[1]) === month;
-    });
-
-    setSpending(filteredSpents);
+  function filterSpents(month: number, filter: string[]) {
+    setSpending(filterSpentPerCategory(filter, month, globalSpending));
     setSelectedMonth(month);
   }
 
   function filterFunction(filter: string[]) {
-    console.log(filter);
-    if (filter.includes("all")) {
-      filterSpents(selectedMonth);
-      return;
-    }
-
-    const filteredSpents = globalSpending.filter((spent) => {
-      return parseInt(spent.date.split("-")[1]) === selectedMonth;
-    });
-    const hui = filteredSpents.filter((spent) =>
-      filter.includes(spent.category.toLowerCase()),
-    );
-    setSpending(hui);
+    setSpending(filterSpentPerCategory(filter, selectedMonth, globalSpending));
+    // setSelectedKeys(new Set(filter));
   }
+
   return (
     <>
       <h1>Finance overview</h1>
       <div>
-        <MonthPicker filterSpents={filterSpents} />
-        In this month you spent: {calculateSum()}€
+        <MonthPicker
+          filterSpents={filterSpents}
+          setSelectedKeys={setSelectedKeys}
+        />
+        <p>
+          In this month you spent:
+          {calculateMonthSum(
+            filterSpentPerMonth(selectedMonth, globalSpending),
+          )}
+          €
+        </p>
+        <p>
+          In this category you spent:
+          {calculateMonthSum(filterSpentPerMonth(selectedMonth, spending))}€
+        </p>
       </div>
       <SpendingTable
         onEdit={onEdit}
@@ -166,6 +121,8 @@ export default function Home() {
         cancelSpentEdit={cancelSpentEdit}
         onSelect={onSelect}
         filterFunction={filterFunction}
+        selectedKeys={selectedKeys}
+        setSelectedKeys={setSelectedKeys}
       />
       <SpentForm addSpent={addSpent} />
     </>
