@@ -1,4 +1,5 @@
 import { Spent } from "@/types/Spent";
+import spendingData2 from "@/spendingData.json";
 
 export function filterSpentPerMonth(month: number, globalSpending: Spent[]) {
   return globalSpending.filter(
@@ -8,18 +9,18 @@ export function filterSpentPerMonth(month: number, globalSpending: Spent[]) {
 
 export function filterSpentPerCategory(
   filter: string[],
-  selectedMonth: number,
   globalSpending: Spent[],
 ) {
-  const filteredSpent = filterSpentPerMonth(selectedMonth, globalSpending);
-  if (filter.includes("all")) {
-    return filteredSpent;
-  }
-  return filteredSpent.filter((spent) =>
+  if (filter.includes("all")) return globalSpending;
+  return globalSpending.filter((spent) =>
     filter.includes(spent.category.toLowerCase()),
   );
 }
 
 export function calculateMonthSum(spending: Spent[]) {
   return spending.reduce((acc, spent) => acc + parseInt(spent.spent), 0);
+}
+
+export function loadSpending(month: number) {
+  return spendingData2.month[month - 1].spending;
 }

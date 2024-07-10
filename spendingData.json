@@ -1,27 +1,150 @@
 {
-  "spendings": [
-    {
-      "subject": "Apartment",
-      "date": "2024-06-01",
-      "spent": "800",
-      "id": 1,
-      "category": "FlAT"
-    },
-    {
-      "subject": "Gym membership",
-      "date": "2024-07-01",
-      "spent": "25",
-      "id": 2,
-      "category": "SPORT"
-    },
-    {
-      "subject": "Food for whole week",
-      "date": "2024-06-01",
-      "spent": "50",
-      "id": 3,
-      "category": "FOOD"
-    }
-  ],
+  "month": [
+  {
+    "name": "January",
+    "spending": [
+      {
+        "subject": "Apartment1",
+        "date": "2024-01-01",
+        "spent": "800",
+        "id": 1,
+        "category": "FLAT"
+      }
+    ]
+  },
+  {
+    "name": "February",
+    "spending": [
+      {
+        "subject": "Apartment2",
+        "date": "2024-02-01",
+        "spent": "800",
+        "id": 1,
+        "category": "FLAT"
+      }
+    ]
+  },
+  {
+    "name": "March",
+    "spending": [
+      {
+        "subject": "Apartment3",
+        "date": "2024-03-01",
+        "spent": "800",
+        "id": 1,
+        "category": "FLAT"
+      }
+    ]
+  },
+  {
+    "name": "April",
+    "spending": [
+      {
+        "subject": "Apartment4",
+        "date": "2024-04-01",
+        "spent": "800",
+        "id": 1,
+        "category": "FLAT"
+      }
+    ]
+  },
+  {
+    "name": "May",
+    "spending": [
+      {
+        "subject": "Apartment5",
+        "date": "2024-05-01",
+        "spent": "800",
+        "id": 1,
+        "category": "FLAT"
+      }
+    ]
+  },
+  {
+    "name": "June",
+    "spending": [
+      {
+        "subject": "Apartment6",
+        "date": "2024-06-01",
+        "spent": "800",
+        "id": 1,
+        "category": "FLAT"
+      }
+    ]
+  },
+  {
+    "name": "Jule",
+    "spending": [
+      {
+        "subject": "Apartment7",
+        "date": "2024-07-01",
+        "spent": "800",
+        "id": 1,
+        "category": "FLAT"
+      }
+    ]
+  },
+  {
+    "name": "August",
+    "spending": [
+      {
+        "subject": "Apartment8",
+        "date": "2024-08-01",
+        "spent": "800",
+        "id": 1,
+        "category": "FLAT"
+      }
+    ]
+  },
+  {
+    "name": "September",
+    "spending": [
+      {
+        "subject": "Apartment9",
+        "date": "2024-09-01",
+        "spent": "800",
+        "id": 1,
+        "category": "FLAT"
+      }
+    ]
+  },
+  {
+    "name": "October",
+    "spending": [
+      {
+        "subject": "Apartment10",
+        "date": "2024-10-01",
+        "spent": "800",
+        "id": 1,
+        "category": "FLAT"
+      }
+    ]
+  },
+  {
+    "name": "November",
+    "spending": [
+      {
+        "subject": "Apartment11",
+        "date": "2024-11-01",
+        "spent": "800",
+        "id": 1,
+        "category": "FLAT"
+      }
+    ]
+  },
+  {
+    "name": "December",
+    "spending": [
+      {
+        "subject": "Apartment12",
+        "date": "2024-12-01",
+        "spent": "800",
+        "id": 1,
+        "category": "FLAT"
+      }
+    ]
+  }
+],
   "columns": [
     {
       "key": "subject",
@@ -44,4 +167,5 @@
       "label": "Actions"
     }
   ]
+
 }

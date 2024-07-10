@@ -1,45 +1,25 @@
-import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { initialStateInterface, setSelectedMonth } from "@/lib/state/appSLice";
 
-export default function MonthPicker({
-  filterSpents,
-  setSelectedKeys,
-}: {
-  filterSpents: any;
-  setSelectedKeys: any;
-}) {
-  const [month, setMonth] = useState(new Date().getMonth() + 1);
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "Jule",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-
-  useEffect(() => {
-    filterSpents(month, ["all"]);
-    setSelectedKeys(new Set(["all"]));
-  }, [month]);
-
+export default function MonthPicker({}: {}) {
+  const dispatch = useDispatch();
+  const selectedMonth = useSelector(
+    (state: initialStateInterface) => state.selectedMonth,
+  );
   const handlePreviousMonth = () => {
-    setMonth((prevMonth) => (prevMonth > 1 ? prevMonth - 1 : 12));
+    console.log("prev");
+    dispatch(setSelectedMonth(selectedMonth === 1 ? 12 : selectedMonth - 1));
   };
 
   const handleNextMonth = () => {
-    setMonth((prevMonth) => (prevMonth < 12 ? prevMonth + 1 : 1));
+    console.log("next");
+    dispatch(setSelectedMonth(selectedMonth === 12 ? 1 : selectedMonth + 1));
   };
 
   return (
     <div className="text-center text-xl">
       <button onClick={handlePreviousMonth}> {"<"} </button>
-      <span>{months[month - 1]}</span>
+      <span>{selectedMonth}</span>
       <button onClick={handleNextMonth}>{">"}</button>
     </div>
   );
