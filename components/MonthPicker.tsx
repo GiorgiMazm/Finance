@@ -1,3 +1,4 @@
+"use client";
 import { useDispatch, useSelector } from "react-redux";
 import { initialStateInterface, setSelectedMonth } from "@/lib/state/appSLice";
 

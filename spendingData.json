@@ -89,10 +89,10 @@
     "spending": [
       {
         "subject": "Apartment8",
-        "date": "2024-08-01",
-        "spent": "800",
+        "date": "2024-08-02",
+        "spent": "1000",
         "id": 1,
-        "category": "FLAT"
+        "category": "FOOD"
       }
     ]
   },

@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { loadSpending } from "@/utils/utils";
 import { Spent } from "@/types/Spent";
 
 export interface initialStateInterface {
@@ -8,7 +7,7 @@ export interface initialStateInterface {
 }
 const initialState: initialStateInterface = {
   selectedMonth: 7,
-  spending: loadSpending(7),
+  spending: [],
 };
 
 const appSlice = createSlice({
@@ -17,10 +16,12 @@ const appSlice = createSlice({
   reducers: {
     setSelectedMonth: (state, action: PayloadAction<number>) => {
       state.selectedMonth = action.payload;
-      state.spending = loadSpending(state.selectedMonth); // Implement loadSpending as needed
     },
     addSpending: (state, action: PayloadAction<Spent>) => {
       state.spending.push(action.payload);
+    },
+    setSpending: (state, action: PayloadAction<Spent[]>) => {
+      state.spending = action.payload;
     },
     deleteSpending: (state, action: PayloadAction<number>) => {
       state.spending = state.spending.filter(
@@ -45,7 +46,12 @@ const appSlice = createSlice({
   },
 });
 
-export const { setSelectedMonth, addSpending, deleteSpending, editSpending } =
-  appSlice.actions;
+export const {
+  setSelectedMonth,
+  setSpending,
+  addSpending,
+  deleteSpending,
+  editSpending,
+} = appSlice.actions;
 
 export default appSlice.reducer;

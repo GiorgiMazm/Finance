@@ -1,9 +1,14 @@
+"use client";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { Spent } from "@/types/Spent";
 import { DateValue } from "@internationalized/date";
 import SpendingTable from "@/components/SpendingTable";
 import SpentForm from "@/components/SpentForm";
-import { calculateMonthSum, filterSpentPerCategory } from "@/utils/utils";
+import {
+  calculateMonthSum,
+  filterSpentPerCategory,
+  loadSpending,
+} from "@/utils/utils";
 import spendingData2 from "@/spendingData.json";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -11,44 +16,55 @@ import {
   addSpending,
   editSpending,
   initialStateInterface,
+  setSpending,
 } from "@/lib/state/appSLice";
 
-export default function Month({}: {}) {
+export default function Month() {
   const dispatch = useDispatch();
-  const { selectedMonth, spending } = useSelector(
-    (state: initialStateInterface) => state,
+  const selectedMonth = useSelector(
+    (state: initialStateInterface) => state.selectedMonth,
   );
+  const spending = useSelector(
+    (state: initialStateInterface) => state.spending,
+  );
+
+  const [filteredSpending, setFilteredSpending] = useState<Spent[]>([]);
+  const [selectedKeys, setSelectedKeys] = useState(new Set(["all"]));
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const fetchedData = await loadSpending(selectedMonth);
+        dispatch(setSpending(fetchedData));
+      } catch (error) {
+        console.error("Failed to load spending data:", error);
+      }
+    };
+
+    fetchData();
+  }, [selectedMonth, dispatch]);
 
   useEffect(() => {
     setSelectedKeys(new Set(["all"]));
     setFilteredSpending(spending);
-  }, [selectedMonth]);
+  }, [spending, selectedMonth]);
 
-  const [filteredSpending, setFilteredSpending] = useState(spending);
   const columns = spendingData2.columns;
 
   function addSpent(spent: Spent) {
     if (parseInt(spent.date.split("-")[1]) === selectedMonth) {
-      setFilteredSpending([...spending, spent]);
       dispatch(addSpending(spent));
     }
   }
 
   function deleteBeiId(id: number) {
-    setFilteredSpending((prevSpending) =>
-      prevSpending.filter((spent) => spent.id !== id),
-    );
     dispatch(deleteSpending(id));
   }
 
   function editSpent(updatedSpent: Spent, id: number) {
-    const index = spending.findIndex((spent) => spent.id === id);
-    dispatch(editSpending({ id: id, updatedSpent: updatedSpent }));
-    const newSpending = [...spending];
-    newSpending[index] = updatedSpent;
+    dispatch(editSpending({ id, updatedSpent }));
   }
 
-  const [selectedKeys, setSelectedKeys] = React.useState(new Set(["all"]));
   function cancelSpentEdit() {
     filterSpents(selectedMonth, Array.from(selectedKeys));
   }
@@ -59,7 +75,6 @@ export default function Month({}: {}) {
   ) {
     if ("target" in event) {
       const { name, value } = event.target;
-
       setFilteredSpending((prevSpending) =>
         prevSpending.map((spent) =>
           spent.id === id ? { ...spent, [name]: value } : spent,
@@ -102,7 +117,7 @@ export default function Month({}: {}) {
         </p>
         <p>
           In this category you spent:
-          {calculateMonthSum(spending)}€
+          {calculateMonthSum(filteredSpending)}€
         </p>
       </div>
       <SpendingTable
