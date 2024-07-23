@@ -17,7 +17,7 @@ export function calculateMonthSum(spending: Spent[]) {
 export async function loadSpending(month: number) {
   const data = await getData(month);
   console.log(data);
-  return data?.spending;
+  return data;
 }
 
 async function getData(month: number) {
