@@ -5,7 +5,10 @@ import { DateValue } from "@internationalized/date";
 import SpendingTable from "@/components/SpendingTable";
 import SpentForm from "@/components/SpentForm";
 import {
+  addSpending1,
   calculateMonthSum,
+  deleteSpending1,
+  editSpending1,
   filterSpentPerCategory,
   loadSpending,
 } from "@/utils/utils";
@@ -55,14 +58,17 @@ export default function Month() {
     if (parseInt(spent.date.split("-")[1]) === selectedMonth) {
       dispatch(addSpending(spent));
     }
+    addSpending1(spent);
   }
 
   function deleteBeiId(id: number) {
+    deleteSpending1(id);
     dispatch(deleteSpending(id));
   }
 
   function editSpent(updatedSpent: Spent, id: number) {
     dispatch(editSpending({ id, updatedSpent }));
+    editSpending1(updatedSpent);
   }
 
   function cancelSpentEdit() {

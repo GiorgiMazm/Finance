@@ -1,4 +1,4 @@
-import { Month, Spent } from "@/types/Spent";
+import { Spent } from "@/types/Spent";
 
 export function filterSpentPerCategory(
   filter: string[],
@@ -23,9 +23,37 @@ export async function loadSpending(month: number) {
 async function getData(month: number) {
   const res = await fetch(`http://localhost:3001/api/month/${month}`);
   if (!res.ok) {
-    // This will activate the closest `error.js` Error Boundary
     throw new Error("Failed to fetch data");
   }
 
-  return (await res.json()) as Month;
+  return (await res.json()) as Spent[];
+}
+
+export async function deleteSpending1(id: number) {
+  const res = await fetch(`http://localhost:3001/api/spending/${id}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+}
+
+export async function addSpending1(spent: Spent) {
+  const res = await fetch(`http://localhost:3001/api/spending/`, {
+    method: "POST",
+    body: JSON.stringify(spent),
+  });
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+}
+
+export async function editSpending1(spent: Spent) {
+  const res = await fetch(`http://localhost:3001/api/spending/`, {
+    method: "PUT",
+    body: JSON.stringify(spent),
+  });
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
 }
