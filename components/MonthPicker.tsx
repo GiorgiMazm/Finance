@@ -17,10 +17,25 @@ export default function MonthPicker({}: {}) {
     dispatch(setSelectedMonth(selectedMonth === 12 ? 1 : selectedMonth + 1));
   };
 
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
   return (
     <div className="text-center text-xl">
       <button onClick={handlePreviousMonth}> {"<"} </button>
-      <span>{selectedMonth}</span>
+      <span className="inline-block w-40">{months[selectedMonth - 1]}</span>
       <button onClick={handleNextMonth}>{">"}</button>
     </div>
   );
