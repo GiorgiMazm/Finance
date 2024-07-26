@@ -2,11 +2,11 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Spent } from "@/types/Spent";
 
 export interface initialStateInterface {
-  selectedMonth: number;
+  selectedDate: string;
   spending: Spent[];
 }
 const initialState: initialStateInterface = {
-  selectedMonth: 7,
+  selectedDate: "2024-07",
   spending: [],
 };
 
@@ -14,8 +14,8 @@ const appSlice = createSlice({
   name: "app",
   initialState,
   reducers: {
-    setSelectedMonth: (state, action: PayloadAction<number>) => {
-      state.selectedMonth = action.payload;
+    setSelectedDate: (state, action: PayloadAction<string>) => {
+      state.selectedDate = action.payload;
     },
     addSpending: (state, action: PayloadAction<Spent>) => {
       state.spending.push(action.payload);
@@ -47,7 +47,7 @@ const appSlice = createSlice({
 });
 
 export const {
-  setSelectedMonth,
+  setSelectedDate,
   setSpending,
   addSpending,
   deleteSpending,

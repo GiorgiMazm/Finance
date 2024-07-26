@@ -14,14 +14,14 @@ export function calculateMonthSum(spending: Spent[]) {
   return spending?.reduce((acc, spent) => acc + parseInt(spent.spent), 0);
 }
 
-export async function loadSpending(month: number) {
-  const data = await getData(month);
+export async function loadSpending(date: string) {
+  const data = await getData(date);
   console.log(data);
   return data;
 }
 
-async function getData(month: number) {
-  const res = await fetch(`http://localhost:3001/api/month/${month}`);
+async function getData(date: string) {
+  const res = await fetch(`http://localhost:3001/api/date/${date}`);
   if (!res.ok) {
     throw new Error("Failed to fetch data");
   }

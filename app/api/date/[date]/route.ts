@@ -4,9 +4,10 @@ import { Spent } from "@/types/Spent";
 
 export async function GET(
   _: NextRequest,
-  { params }: { params: { month: string } },
+  { params }: { params: { date: string } },
 ) {
-  const { month } = params;
+  const { date } = params;
+  const [year, month] = date.split("-");
 
   // Validate the month parameter
   const monthIndex = parseInt(month, 10);
@@ -20,7 +21,7 @@ export async function GET(
   try {
     // Use parameterized queries to prevent SQL injection
     const query = `SELECT * FROM spending WHERE user_id = $1 AND EXTRACT(YEAR FROM date) = $2 AND EXTRACT(MONTH FROM date) = $3;`;
-    const { rows } = await pool.query(query, [1, 2024, monthIndex]);
+    const { rows } = await pool.query(query, [1, year, monthIndex]);
 
     rows.map((spent: Spent) => {
       const date = new Date(spent.date);

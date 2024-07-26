@@ -1,11 +1,11 @@
-import MonthPicker from "@/components/MonthPicker";
+import DatePicker from "@/components/DatePicker";
 import Month from "@/components/Month";
 export default function Home() {
   return (
     <>
       <h1>Finance Overview</h1>
       <div>
-        <MonthPicker />
+        <DatePicker />
       </div>
       <Month />
     </>

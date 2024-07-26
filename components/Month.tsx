@@ -24,8 +24,8 @@ import {
 
 export default function Month() {
   const dispatch = useDispatch();
-  const selectedMonth = useSelector(
-    (state: initialStateInterface) => state.selectedMonth,
+  const selectedDate = useSelector(
+    (state: initialStateInterface) => state.selectedDate,
   );
   const spending = useSelector(
     (state: initialStateInterface) => state.spending,
@@ -37,7 +37,7 @@ export default function Month() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const fetchedData = await loadSpending(selectedMonth);
+        const fetchedData = await loadSpending(selectedDate);
         dispatch(setSpending(fetchedData));
       } catch (error) {
         console.error("Failed to load spending data:", error);
@@ -45,17 +45,17 @@ export default function Month() {
     };
 
     fetchData();
-  }, [selectedMonth, dispatch]);
+  }, [selectedDate, dispatch]);
 
   useEffect(() => {
     setSelectedKeys(new Set(["all"]));
     setFilteredSpending(spending);
-  }, [spending, selectedMonth]);
+  }, [spending, selectedDate]);
 
   const columns = spendingData2.columns;
 
   function addSpent(spent: Spent) {
-    if (parseInt(spent.date.split("-")[1]) === selectedMonth) {
+    if (spent.date.includes(selectedDate)) {
       dispatch(addSpending(spent));
     }
     addSpending1(spent);
@@ -72,7 +72,7 @@ export default function Month() {
   }
 
   function cancelSpentEdit() {
-    filterSpents(selectedMonth, Array.from(selectedKeys));
+    filterSpents(Array.from(selectedKeys));
   }
 
   function onEdit(
@@ -105,7 +105,7 @@ export default function Month() {
     );
   }
 
-  function filterSpents(month: number, filter: string[]) {
+  function filterSpents(filter: string[]) {
     setFilteredSpending(filterSpentPerCategory(filter, spending));
   }
 
