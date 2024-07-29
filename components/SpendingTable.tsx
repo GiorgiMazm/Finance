@@ -180,7 +180,7 @@ export default function SpendingTable({
   }, [selectedKeys]);
 
   return (
-    <Table aria-label="Spending table">
+    <Table aria-label="Spending table" className="py-6">
       <TableHeader>
         {columns.map((column) => (
           <TableColumn key={column.key}>

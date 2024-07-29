@@ -16,9 +16,9 @@ export default function DatePicker({}: {}) {
   }
 
   return (
-    <div className="text-center text-xl flex">
+    <div className="text-center text-xl">
       <Input
-        className="w-1/6"
+        className="w-80 mx-auto"
         type="month"
         name="subject"
         value={selectedDate}

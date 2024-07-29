@@ -121,10 +121,12 @@ export default function Month() {
           In this month you spent:
           {calculateMonthSum(spending)}€
         </p>
-        <p>
-          In this category you spent:
-          {calculateMonthSum(filteredSpending)}€
-        </p>
+        {!selectedKeys.has("all") && (
+          <p>
+            In this category you spent:
+            {calculateMonthSum(filteredSpending)}€
+          </p>
+        )}
       </div>
       <SpendingTable
         onEdit={onEdit}
