@@ -14,8 +14,9 @@ import {
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
+  SortDescriptor,
 } from "@nextui-org/react";
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useState, useMemo } from "react";
 import { Button } from "@nextui-org/button";
 import { DateValue, parseDate } from "@internationalized/date";
 
@@ -48,6 +49,10 @@ export default function SpendingTable({
   setSelectedKeys,
 }: SpendingTableProps) {
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
+    column: "spent",
+    direction: "descending",
+  });
 
   const handleEditClick = (id: number) => {
     setEditingId(id);
@@ -72,6 +77,31 @@ export default function SpendingTable({
     onEdit(event, id);
   };
 
+  const sortedSpending = useMemo(() => {
+    if (["date", "spent"].includes(String(sortDescriptor.column))) {
+      const sorted = [...spending];
+      sorted.sort((a, b) => {
+        const aValue = a[sortDescriptor.column as keyof Spent];
+        const bValue = b[sortDescriptor.column as keyof Spent];
+
+        if (sortDescriptor.column === "spent") {
+          // Convert to numbers for comparison
+          return sortDescriptor.direction === "ascending"
+            ? Number(aValue) - Number(bValue)
+            : Number(bValue) - Number(aValue);
+        }
+
+        if (aValue < bValue)
+          return sortDescriptor.direction === "ascending" ? -1 : 1;
+        if (aValue > bValue)
+          return sortDescriptor.direction === "ascending" ? 1 : -1;
+        return 0;
+      });
+      return sorted;
+    }
+    return spending;
+  }, [spending, sortDescriptor]);
+
   function renderCell(spent: Spent, columnKey: React.Key) {
     const cellValue = spent[columnKey as keyof Spent];
 
@@ -84,7 +114,7 @@ export default function SpendingTable({
               value={spent.subject}
               name="subject"
               onChange={(event) => handleChange(event, spent.id)}
-              placeholder={`Enter`}
+              placeholder="Enter"
             />
           );
         } else return cellValue;
@@ -107,7 +137,7 @@ export default function SpendingTable({
               value={spent.spent}
               name="spent"
               onChange={(event) => handleChange(event, spent.id)}
-              placeholder={`Enter`}
+              placeholder="Enter"
               type="number"
               startContent={
                 <div className="pointer-events-none flex items-center">
@@ -163,7 +193,7 @@ export default function SpendingTable({
     }
   }
 
-  const selectedValue = React.useMemo(() => {
+  const selectedValue = useMemo(() => {
     let keysArray = Array.from(selectedKeys);
 
     if (selectedKeys.size > 1 && keysArray.includes("all")) {
@@ -180,10 +210,18 @@ export default function SpendingTable({
   }, [selectedKeys]);
 
   return (
-    <Table aria-label="Spending table" className="py-6">
+    <Table
+      sortDescriptor={sortDescriptor}
+      onSortChange={setSortDescriptor}
+      aria-label="Spending table"
+      className="py-6"
+    >
       <TableHeader>
         {columns.map((column) => (
-          <TableColumn key={column.key}>
+          <TableColumn
+            key={column.key}
+            allowsSorting={["date", "spent"].includes(column.key)}
+          >
             {column.key === "category" ? (
               <Dropdown>
                 <DropdownTrigger>
@@ -213,7 +251,7 @@ export default function SpendingTable({
         ))}
       </TableHeader>
       <TableBody>
-        {spending.map((item) => (
+        {sortedSpending.map((item) => (
           <TableRow key={item.id}>
             {columns.map((column) => (
               <TableCell className="w-[200px]" key={column.key}>

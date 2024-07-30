@@ -9,8 +9,11 @@ import {
   Link,
 } from "@nextui-org/react";
 import { Button } from "@nextui-org/button";
+import { usePathname } from "next/navigation";
 
 export function Header() {
+  const pathname = usePathname();
+
   return (
     <Navbar isBordered maxWidth="full" className="mb-4">
       <ThemeSwitcher />
@@ -19,18 +22,24 @@ export function Header() {
       </NavbarBrand>
 
       <NavbarContent className="hidden sm:flex gap-4" justify="start">
-        <NavbarItem>
-          <Link color="foreground" href="/">
+        <NavbarItem isActive={pathname === "/"} aria-current="page">
+          <Link color={pathname !== "/" ? "foreground" : undefined} href="/">
             Home
           </Link>
         </NavbarItem>
-        <NavbarItem isActive>
-          <Link href="/overview" aria-current="page">
+        <NavbarItem isActive={pathname === "/overview"}>
+          <Link
+            color={pathname !== "/overview" ? "foreground" : undefined}
+            href="/overview"
+          >
             Overview
           </Link>
         </NavbarItem>
-        <NavbarItem>
-          <Link color="foreground" href="/">
+        <NavbarItem isActive={pathname === "/diagramms"}>
+          <Link
+            color={pathname !== "/diagramms" ? "foreground" : undefined}
+            href="/diagramms"
+          >
             Diagramms
           </Link>
         </NavbarItem>
