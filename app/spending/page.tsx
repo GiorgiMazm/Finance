@@ -1,9 +1,9 @@
 import DatePicker from "@/components/DatePicker";
 import Month from "@/components/Month";
-export default function Home() {
+export default function Spending() {
   return (
     <div className="container mx-auto">
-      <h1>Overview</h1>
+      <h1>Spending</h1>
       <div>
         <DatePicker />
       </div>

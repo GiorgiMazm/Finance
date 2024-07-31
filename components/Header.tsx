@@ -6,10 +6,10 @@ import {
   NavbarBrand,
   NavbarContent,
   NavbarItem,
-  Link,
 } from "@nextui-org/react";
 import { Button } from "@nextui-org/button";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 export function Header() {
   const pathname = usePathname();
@@ -23,24 +23,27 @@ export function Header() {
 
       <NavbarContent className="hidden sm:flex gap-4" justify="start">
         <NavbarItem isActive={pathname === "/"} aria-current="page">
-          <Link color={pathname !== "/" ? "foreground" : undefined} href="/">
+          <Link
+            className={pathname === "/" ? "text-primary" : undefined}
+            href="/"
+          >
             Home
           </Link>
         </NavbarItem>
-        <NavbarItem isActive={pathname === "/overview"}>
+        <NavbarItem isActive={pathname === "/spending"}>
           <Link
-            color={pathname !== "/overview" ? "foreground" : undefined}
-            href="/overview"
+            className={pathname === "/spending" ? "text-primary" : undefined}
+            href="/spending"
           >
-            Overview
+            Spending
           </Link>
         </NavbarItem>
-        <NavbarItem isActive={pathname === "/diagramms"}>
+        <NavbarItem isActive={pathname === "/dashboard"}>
           <Link
-            color={pathname !== "/diagramms" ? "foreground" : undefined}
-            href="/diagramms"
+            className={pathname === "/dashboard" ? "text-primary" : undefined}
+            href="/dashboard"
           >
-            Diagramms
+            Dashboard
           </Link>
         </NavbarItem>
       </NavbarContent>

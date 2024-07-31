@@ -1,7 +1,7 @@
-export default function Home() {
+export default function Dashboard() {
   return (
     <div className="container mx-auto">
-      <h1>Diagramms</h1>
+      <h1>Dashboard</h1>
     </div>
   );
 }
