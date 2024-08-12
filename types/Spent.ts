@@ -12,4 +12,10 @@ export interface Month {
   sum: number;
 }
 
-export const SpentCategory = ["Food", "Flat", "Sport"];
+export const SpentCategory = [
+  "Food",
+  "Flat",
+  "Sport",
+  "Investment",
+  "Entertainment",
+];
