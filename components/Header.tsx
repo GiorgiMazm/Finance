@@ -46,6 +46,14 @@ export function Header() {
             Dashboard
           </Link>
         </NavbarItem>
+        <NavbarItem isActive={pathname === "/calculator"}>
+          <Link
+            className={pathname === "/calculator" ? "text-primary" : undefined}
+            href="/calculator"
+          >
+            Calculator
+          </Link>
+        </NavbarItem>
       </NavbarContent>
       <NavbarContent justify="end">
         <NavbarItem className="hidden lg:flex">
