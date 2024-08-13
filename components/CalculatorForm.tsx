@@ -2,6 +2,11 @@
 import { ChangeEvent, useState } from "react";
 import { Button } from "@nextui-org/button";
 import { Input, Select, SelectItem } from "@nextui-org/react";
+import {
+  calculateCompoundInterest,
+  formatNumberWithoutSpaces,
+  formatNumberWithSpaces,
+} from "@/utils/utils";
 
 export default function CalculatorForm() {
   const periods = ["years", "months"];
@@ -10,67 +15,40 @@ export default function CalculatorForm() {
     interestRate: "7",
     period: "10",
     periodType: periods[0],
-    additionalContributions: "1000",
+    additionalContributions: "1 000",
     additionalContributionsPeriod: periods[1],
   });
 
   const [isResult, setIsResult] = useState(false);
   const [result, setResult] = useState("0");
-  const handleInputChange = (e: { target: { value: string } }) => {
-    const inputValue = e.target.value.replace(/\s/g, "");
+
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    field: string,
+  ) => {
+    const inputValue = formatNumberWithoutSpaces(e.target.value);
 
     // If the input is a valid number, format it
     if (!isNaN(Number(inputValue)) && inputValue !== "") {
       const formattedValue = formatNumberWithSpaces(inputValue);
-      setFormData({ ...formData, initialInvestment: formattedValue });
+      setFormData({ ...formData, [field]: formattedValue });
     } else {
-      setFormData({ ...formData, initialInvestment: inputValue });
+      setFormData({ ...formData, [field]: inputValue });
     }
-  };
-
-  const formatNumberWithSpaces = (value: string) => {
-    // Convert the number to a string and use a regular expression to add spaces
-    return value.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   };
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
   }
-  function calculateCompoundInterest(
-    initialInvestment: string,
-    annualInterestRate: number,
-    periods: number,
-    periodType: string,
-    contribution: number,
-    additionalContributionsPeriod: string,
-  ) {
-    // Clean up the initial investment input and convert it to a float
-    let monthlyContribution = contribution;
-    if (additionalContributionsPeriod === "years")
-      monthlyContribution = contribution / 12;
-    let totalAmount = parseFloat(initialInvestment.replace(/\s/g, ""));
-    const ratePerPeriod = annualInterestRate / 100 / 12;
-
-    // Determine the total number of periods
-    const isPeriodInYears = periodType === "years";
-    const totalPeriods = isPeriodInYears ? periods * 12 : periods;
-
-    for (let i = 1; i <= totalPeriods; i++) {
-      totalAmount += monthlyContribution;
-      totalAmount += totalAmount * ratePerPeriod;
-    }
-
-    return totalAmount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-  }
 
   function calculate() {
     const result = calculateCompoundInterest(
-      formData.initialInvestment,
+      parseFloat(formatNumberWithoutSpaces(formData.initialInvestment)),
       parseInt(formData.interestRate),
       parseInt(formData.period),
       formData.periodType,
-      parseInt(formData.additionalContributions),
+      parseFloat(formatNumberWithoutSpaces(formData.additionalContributions)),
       formData.additionalContributionsPeriod,
     );
     setIsResult(true);
@@ -88,7 +66,7 @@ export default function CalculatorForm() {
       <div className="border-1 p-4  flex flex-wrap md:flex-nowrap gap-4 flex-col md:w-1/3 justify-center">
         <Input
           value={formData.initialInvestment}
-          onChange={handleInputChange}
+          onChange={(event) => handleInputChange(event, "initialInvestment")}
           label="Initial Investment:"
           placeholder="Enter how much you will invest initially"
           name="initialInvestment"
@@ -137,8 +115,10 @@ export default function CalculatorForm() {
         </div>
         <div className="flex gap-5">
           <Input
-            type="number"
-            onChange={handleChange}
+            type="text"
+            onChange={(event) =>
+              handleInputChange(event, "additionalContributions")
+            }
             value={formData.additionalContributions}
             label="Additional Contributions"
             placeholder="How much you will be contrinuting montly/annually?"

@@ -63,3 +63,37 @@ export async function getYearSpending(year: string) {
     throw new Error("Failed to fetch data");
   } else return (await res.json()) as Spent[];
 }
+
+export const formatNumberWithSpaces = (value: string) => {
+  return value.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+};
+export const formatNumberWithoutSpaces = (value: string) => {
+  return value.replace(/\s/g, "");
+};
+
+export function calculateCompoundInterest(
+  initialInvestment: number,
+  annualInterestRate: number,
+  periods: number,
+  periodType: string,
+  contribution: number,
+  additionalContributionsPeriod: string,
+) {
+  // Clean up the initial investment input and convert it to a float
+  let monthlyContribution = contribution;
+  if (additionalContributionsPeriod === "years")
+    monthlyContribution = contribution / 12;
+  let totalAmount = initialInvestment;
+  const ratePerPeriod = annualInterestRate / 100 / 12;
+
+  // Determine the total number of periods
+  const isPeriodInYears = periodType === "years";
+  const totalPeriods = isPeriodInYears ? periods * 12 : periods;
+
+  for (let i = 1; i <= totalPeriods; i++) {
+    totalAmount += monthlyContribution;
+    totalAmount += totalAmount * ratePerPeriod;
+  }
+
+  return formatNumberWithSpaces(totalAmount.toFixed(2));
+}
