@@ -28,16 +28,17 @@ async function getData(date: string) {
   return (await res.json()) as Spent[];
 }
 
-export async function deleteSpending1(id: number) {
-  const res = await fetch(`http://localhost:5555/api/spending/${id}`, {
-    method: "DELETE",
-  });
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
+export async function deleteSpending(id: number) {
+  try {
+    const res = await fetch(`http://localhost:5555/api/spending/${id}`, {
+      method: "DELETE",
+    });
+  } catch (err) {
+    console.log(err);
   }
 }
 
-export async function addSpending1(spent: Spent) {
+export async function addSpending(spent: Partial<Spent>) {
   const res = await fetch(`http://localhost:5555/api/spending/`, {
     method: "POST",
     body: JSON.stringify(spent),
@@ -47,7 +48,7 @@ export async function addSpending1(spent: Spent) {
   }
 }
 
-export async function editSpending1(spent: Spent) {
+export async function editSpending(spent: Spent) {
   const res = await fetch(`http://localhost:5555/api/spending/`, {
     method: "PUT",
     body: JSON.stringify(spent),

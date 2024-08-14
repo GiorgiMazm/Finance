@@ -23,7 +23,7 @@ export async function GET(
     const query = `SELECT * FROM spending WHERE user_id = $1 AND EXTRACT(YEAR FROM date) = $2 AND EXTRACT(MONTH FROM date) = $3;`;
     const { rows } = await pool.query(query, [1, year, monthIndex]);
 
-    rows.map((spent: Spent) => {
+    rows.forEach((spent: Spent) => {
       const date = new Date(spent.date);
 
       // Get the date part only

@@ -1,26 +1,20 @@
 "use client";
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { Spent } from "@/types/Spent";
 import { DateValue } from "@internationalized/date";
 import SpendingTable from "@/components/SpendingTable";
 import SpentForm from "@/components/SpentForm";
 import {
-  addSpending1,
+  addSpending,
   calculateMonthSum,
-  deleteSpending1,
-  editSpending1,
+  deleteSpending,
+  editSpending,
   filterSpentPerCategory,
   loadSpending,
 } from "@/utils/utils";
 import spendingData2 from "@/spendingData.json";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  deleteSpending,
-  addSpending,
-  editSpending,
-  initialStateInterface,
-  setSpending,
-} from "@/lib/state/appSLice";
+import { initialStateInterface, setSpending } from "@/lib/state/appSLice";
 
 export default function Month() {
   const dispatch = useDispatch();
@@ -33,6 +27,22 @@ export default function Month() {
 
   const [filteredSpending, setFilteredSpending] = useState<Spent[]>([]);
   const [selectedKeys, setSelectedKeys] = useState(new Set(["all"]));
+  const [isDataChanged, setIsDataChanged] = useState(false);
+
+  const addSpent = useCallback(async (spent: Partial<Spent>) => {
+    await addSpending(spent);
+    setIsDataChanged((prev) => !prev);
+  }, []);
+
+  const deleteSpent = useCallback(async (id: number) => {
+    await deleteSpending(id);
+    setIsDataChanged((prev) => !prev);
+  }, []);
+
+  const editSpent = useCallback(async (updatedSpent: Spent) => {
+    await editSpending(updatedSpent);
+    setIsDataChanged((prev) => !prev);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,7 +55,7 @@ export default function Month() {
     };
 
     fetchData();
-  }, [selectedDate, dispatch]);
+  }, [selectedDate, isDataChanged]);
 
   useEffect(() => {
     setSelectedKeys(new Set(["all"]));
@@ -53,23 +63,6 @@ export default function Month() {
   }, [spending, selectedDate]);
 
   const columns = spendingData2.columns;
-
-  function addSpent(spent: Spent) {
-    if (spent.date.includes(selectedDate)) {
-      dispatch(addSpending(spent));
-    }
-    addSpending1(spent);
-  }
-
-  function deleteBeiId(id: number) {
-    deleteSpending1(id);
-    dispatch(deleteSpending(id));
-  }
-
-  function editSpent(updatedSpent: Spent, id: number) {
-    dispatch(editSpending({ id, updatedSpent }));
-    editSpending1(updatedSpent);
-  }
 
   function cancelSpentEdit() {
     filterSpents(Array.from(selectedKeys));
@@ -133,7 +126,7 @@ export default function Month() {
         editSpent={editSpent}
         columns={columns}
         spending={filteredSpending}
-        onDelete={deleteBeiId}
+        onDelete={deleteSpent}
         cancelSpentEdit={cancelSpentEdit}
         onSelect={onSelect}
         filterFunction={filterFunction}

@@ -9,17 +9,15 @@ import {
   getLocalTimeZone,
 } from "@internationalized/date";
 interface spentFormProps {
-  addSpent: (spent: Spent) => void;
+  addSpent: (spent: Partial<Spent>) => void;
 }
 
 export default function SpentForm({ addSpent }: spentFormProps) {
-  const [spendingCounter, setSpendingCounter] = useState(4);
   const [formData, setFormData] = useState({
     subject: "Poison",
     date: today(getLocalTimeZone()).toString(),
     spent: "10",
     category: SpentCategory[0],
-    id: spendingCounter,
   });
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -28,14 +26,12 @@ export default function SpentForm({ addSpent }: spentFormProps) {
   }
 
   function handleAddSpent() {
-    const newSpent = { ...formData, id: spendingCounter };
+    const newSpent = { ...formData };
     addSpent(newSpent);
-    setSpendingCounter(spendingCounter + 1);
     setFormData({
       subject: "Groceries",
       date: today(getLocalTimeZone()).toString(),
       spent: "20",
-      id: spendingCounter + 1,
       category: SpentCategory[1],
     });
   }
