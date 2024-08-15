@@ -75,7 +75,7 @@ export const formatNumberWithoutSpaces = (value: string) => {
   return value.replace(/\s/g, "");
 };
 
-export function calculateCompoundInterest(
+export function calculateTotalAmount(
   initialInvestment: number,
   annualInterestRate: number,
   periods: number,
@@ -100,4 +100,41 @@ export function calculateCompoundInterest(
   }
 
   return formatNumberWithSpaces(totalAmount.toFixed(2));
+}
+
+export function calculateAdditionalContributions({
+  initialInvestment,
+  annualInterestRate,
+  periods,
+  periodType,
+  totalAmount,
+}: {
+  initialInvestment: number;
+  annualInterestRate: number;
+  periods: number;
+  periodType: string;
+  totalAmount: number;
+}): string {
+  // Convert interest rate to a monthly rate
+  const ratePerPeriod = annualInterestRate / 100 / 12;
+
+  // Determine the total number of periods
+  const isPeriodInYears = periodType === "years";
+  const totalPeriods = isPeriodInYears ? periods * 12 : periods;
+
+  // Calculate the future value of the initial investment alone
+  let futureValueWithoutContributions =
+    initialInvestment * Math.pow(1 + ratePerPeriod, totalPeriods);
+
+  // Calculate the additional monthly contributions required
+  let monthlyContribution =
+    ((totalAmount - futureValueWithoutContributions) * ratePerPeriod) /
+    (Math.pow(1 + ratePerPeriod, totalPeriods) - 1);
+
+  // Handle edge cases where no contributions are needed or contributions aren't possible
+  if (monthlyContribution < 0 || isNaN(monthlyContribution)) {
+    monthlyContribution = 0;
+  }
+
+  return formatNumberWithSpaces(monthlyContribution.toFixed(2));
 }
