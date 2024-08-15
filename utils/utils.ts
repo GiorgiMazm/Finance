@@ -59,10 +59,13 @@ export async function editSpending(spent: Spent) {
 }
 
 export async function getYearSpending(year: string) {
-  const res = await fetch(`http://localhost:3000/api/spendings/${year}`);
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  } else return (await res.json()) as Spent[];
+  try {
+    const res = await fetch(`http://localhost:3000/api/spendings/${year}`);
+    console.log(res);
+    return (await res.json()) as Spent[];
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 export const formatNumberWithSpaces = (value: string) => {

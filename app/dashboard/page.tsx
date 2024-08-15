@@ -3,7 +3,7 @@ import PieChart from "@/components/PieChart";
 import { getYearSpending } from "@/utils/utils";
 
 export default async function Dashboard() {
-  let spending = await getYearSpending("2024");
+  let spending = (await getYearSpending("2024")) || [];
 
   return (
     <div className="container mx-auto">
