@@ -15,8 +15,7 @@ export function calculateMonthSum(spending: Spent[]) {
 }
 
 export async function loadSpending(date: string) {
-  const data = await getData(date);
-  return data;
+  return await getData(date);
 }
 
 async function getData(date: string) {
@@ -72,17 +71,25 @@ export const formatNumberWithSpaces = (value: string) => {
   return value.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 };
 export const formatNumberWithoutSpaces = (value: string) => {
-  return value.replace(/\s/g, "");
+  const kek = parseFloat(value.replace(/\s/g, ""));
+  return isNaN(kek) ? 0 : kek;
 };
 
-export function calculateTotalAmount(
-  initialInvestment: number,
-  annualInterestRate: number,
-  periods: number,
-  periodType: string,
-  contribution: number,
-  additionalContributionsPeriod: string,
-) {
+export function calculateTotalAmount({
+  initialInvestment,
+  annualInterestRate,
+  periods,
+  periodType,
+  contribution,
+  additionalContributionsPeriod,
+}: {
+  initialInvestment: number;
+  annualInterestRate: number;
+  periods: number;
+  periodType: string;
+  contribution: number;
+  additionalContributionsPeriod: string;
+}) {
   // Clean up the initial investment input and convert it to a float
   let monthlyContribution = contribution;
   if (additionalContributionsPeriod === "years")
@@ -137,4 +144,50 @@ export function calculateAdditionalContributions({
   }
 
   return formatNumberWithSpaces(monthlyContribution.toFixed(2));
+}
+
+export function calculateTimeFrame({
+  initialInvestment,
+  annualInterestRate,
+  totalAmount,
+  contribution,
+  additionalContributionsPeriod,
+}: {
+  initialInvestment: number;
+  annualInterestRate: number;
+  contribution: number;
+  additionalContributionsPeriod: string;
+  totalAmount: number;
+}): string {
+  // Adjust the contribution to a monthly basis if the contributions are made yearly
+  let monthlyContribution = contribution;
+  if (additionalContributionsPeriod === "years") {
+    monthlyContribution = contribution / 12;
+  }
+
+  // Convert the annual interest rate to a monthly rate
+  const ratePerPeriod = annualInterestRate / 100 / 12;
+
+  // Initialize variables to track the total amount and the number of months
+  let currentAmount = initialInvestment;
+  let months = 0;
+
+  // Loop until the current amount reaches or exceeds the target amount
+  while (currentAmount < totalAmount) {
+    // Apply interest to the current amount
+    currentAmount += currentAmount * ratePerPeriod;
+
+    // Add the monthly contribution
+    currentAmount += monthlyContribution;
+
+    // Increment the month counter
+    months++;
+  }
+
+  // Convert the total months to years and months
+  const years = Math.floor(months / 12);
+  const remainingMonths = months % 12;
+
+  // Return the result as a string, e.g., "5 years and 3 months"
+  return `${years} years and ${remainingMonths} months`;
 }

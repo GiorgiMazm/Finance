@@ -4,6 +4,7 @@ import { Button } from "@nextui-org/button";
 import { Input, Select, SelectItem } from "@nextui-org/react";
 import {
   calculateAdditionalContributions,
+  calculateTimeFrame,
   calculateTotalAmount,
   formatNumberWithoutSpaces,
   formatNumberWithSpaces,
@@ -11,7 +12,7 @@ import {
 
 export default function CalculatorForm() {
   const periods = ["years", "months"];
-  const calculatorTypes = ["amount", "additionalContributions"];
+  const calculatorTypes = ["amount", "additionalContributions", "timeFrame"];
   const [formData, setFormData] = useState({
     initialInvestment: "10 000",
     interestRate: "7",
@@ -26,19 +27,34 @@ export default function CalculatorForm() {
   const [result, setResult] = useState("0");
   const [calculatorType, setCalculatorType] = useState(calculatorTypes[0]);
 
+  function isValid() {
+    if (calculatorType === calculatorTypes[0]) {
+      return !(formData.period === "" || formData.interestRate === "" || 0);
+    } else if (calculatorType === calculatorTypes[1]) {
+      return !(
+        formData.period === "" ||
+        formData.interestRate === "" ||
+        0 ||
+        formData.totalAmount === "" ||
+        formData.initialInvestment === ""
+      );
+    } else if (calculatorType === calculatorTypes[2]) {
+      return !(
+        formData.interestRate === "" ||
+        0 ||
+        formData.totalAmount === ""
+      );
+    }
+  }
+
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement>,
     field: string,
   ) => {
     const inputValue = formatNumberWithoutSpaces(e.target.value);
 
-    // If the input is a valid number, format it
-    if (!isNaN(Number(inputValue)) && inputValue !== "") {
-      const formattedValue = formatNumberWithSpaces(inputValue);
-      setFormData({ ...formData, [field]: formattedValue });
-    } else {
-      setFormData({ ...formData, [field]: inputValue });
-    }
+    const formattedValue = formatNumberWithSpaces(String(inputValue));
+    setFormData({ ...formData, [field]: formattedValue });
   };
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -47,34 +63,53 @@ export default function CalculatorForm() {
   }
 
   function calculate() {
+    if (!isValid()) {
+      setIsResult(false);
+      return;
+    }
     if (calculatorType === calculatorTypes[0]) {
       setResult(
-        calculateTotalAmount(
-          parseFloat(formatNumberWithoutSpaces(formData.initialInvestment)),
-          parseInt(formData.interestRate),
-          parseInt(formData.period),
-          formData.periodType,
-          parseFloat(
-            formatNumberWithoutSpaces(formData.additionalContributions),
-          ),
-          formData.additionalContributionsPeriod,
-        ),
+        calculateTotalAmount({
+          additionalContributionsPeriod: formData.additionalContributionsPeriod,
+          annualInterestRate: parseInt(formData.interestRate),
+          contribution:
+            formatNumberWithoutSpaces(formData.additionalContributions) || 0,
+          initialInvestment:
+            formatNumberWithoutSpaces(formData.initialInvestment) || 0,
+          periodType: formData.periodType,
+          periods: parseInt(formData.period),
+        }),
       );
     } else if (calculatorType === calculatorTypes[1]) {
       setResult(
         formatNumberWithSpaces(
           calculateAdditionalContributions({
             annualInterestRate: parseFloat(formData.interestRate),
-            initialInvestment: parseFloat(
-              formatNumberWithoutSpaces(formData.initialInvestment),
+            initialInvestment: formatNumberWithoutSpaces(
+              formData.initialInvestment,
             ),
             periodType: formData.periodType,
-            totalAmount: parseFloat(
-              formatNumberWithoutSpaces(formData.totalAmount),
-            ),
+            totalAmount: formatNumberWithoutSpaces(formData.totalAmount),
+
             periods: parseInt(formData.period),
           }),
         ),
+      );
+    } else if (calculatorType === calculatorTypes[2]) {
+      console.log("hi");
+      setResult(
+        calculateTimeFrame({
+          annualInterestRate: parseFloat(formData.interestRate),
+          initialInvestment: formatNumberWithoutSpaces(
+            formData.initialInvestment,
+          ),
+
+          totalAmount: formatNumberWithoutSpaces(formData.totalAmount),
+          additionalContributionsPeriod: formData.additionalContributionsPeriod,
+          contribution: formatNumberWithoutSpaces(
+            formData.additionalContributions,
+          ),
+        }),
       );
     }
     setIsResult(true);
@@ -85,31 +120,39 @@ export default function CalculatorForm() {
     if (!value) return;
     setFormData({ ...formData, [field]: value });
   }
-
   return (
     <div className="container mx-auto gap-12">
       <div className="my-10">
         <h2>Change calculator&apos;s type</h2>
-        {calculatorType === calculatorTypes[0] && (
-          <Button
-            className="mr-6 mt-4 w-60"
-            onClick={() => setCalculatorType(calculatorTypes[1])}
-          >
-            Total amount
-          </Button>
-        )}
-        {calculatorType === calculatorTypes[1] && (
+        {calculatorType !== calculatorTypes[0] && (
           <Button
             className="mr-6 mt-4 w-60"
             onClick={() => setCalculatorType(calculatorTypes[0])}
           >
+            Total amount
+          </Button>
+        )}
+        {calculatorType !== calculatorTypes[1] && (
+          <Button
+            className="mr-6 mt-4 w-60"
+            onClick={() => setCalculatorType(calculatorTypes[1])}
+          >
             Additional contributions
+          </Button>
+        )}
+        {calculatorType !== calculatorTypes[2] && (
+          <Button
+            className="mr-6 mt-4 w-60"
+            onClick={() => setCalculatorType(calculatorTypes[2])}
+          >
+            Time frame
           </Button>
         )}
       </div>
       <div className="border-1 p-4  flex flex-wrap md:flex-nowrap gap-4 flex-col md:w-1/3 justify-center">
-        {calculatorType === calculatorTypes[1] && (
+        {calculatorType !== calculatorTypes[0] && (
           <Input
+            isRequired
             value={formData.totalAmount}
             onChange={(event) => handleInputChange(event, "totalAmount")}
             label="Wanted amount:"
@@ -123,6 +166,7 @@ export default function CalculatorForm() {
           />
         )}
         <Input
+          isRequired={calculatorType === calculatorTypes[1]}
           value={formData.initialInvestment}
           onChange={(event) => handleInputChange(event, "initialInvestment")}
           label="Initial Investment:"
@@ -136,6 +180,7 @@ export default function CalculatorForm() {
         />
         <Input
           onChange={handleChange}
+          isRequired
           value={formData.interestRate}
           label="interestRate"
           type="number"
@@ -147,31 +192,34 @@ export default function CalculatorForm() {
             </div>
           }
         />
-        <div className="flex gap-5">
-          <Input
-            onChange={handleChange}
-            value={formData.period}
-            type="number"
-            label="Period"
-            placeholder="period"
-            name="period"
-          />
+        {calculatorType !== calculatorTypes[2] && (
+          <div className="flex gap-5">
+            <Input
+              isRequired={calculatorType !== calculatorTypes[2]}
+              onChange={handleChange}
+              value={formData.period}
+              type="number"
+              label="Period"
+              placeholder="period"
+              name="period"
+            />
 
-          <Select
-            label="Type"
-            className="max-w-xs"
-            defaultSelectedKeys={[formData.periodType]}
-            disallowEmptySelection
-            onChange={(e) => onSelect(e, "periodType")}
-          >
-            {periods.map((category) => (
-              <SelectItem key={category} value={category}>
-                {category}
-              </SelectItem>
-            ))}
-          </Select>
-        </div>
-        {calculatorType === calculatorTypes[0] && (
+            <Select
+              label="Type"
+              className="max-w-xs"
+              defaultSelectedKeys={[formData.periodType]}
+              disallowEmptySelection
+              onChange={(e) => onSelect(e, "periodType")}
+            >
+              {periods.map((category) => (
+                <SelectItem key={category} value={category}>
+                  {category}
+                </SelectItem>
+              ))}
+            </Select>
+          </div>
+        )}
+        {calculatorType !== calculatorTypes[1] && (
           <div className="flex gap-5">
             <Input
               type="text"
