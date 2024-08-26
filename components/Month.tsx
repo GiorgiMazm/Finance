@@ -3,9 +3,7 @@ import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { Spent } from "@/types/Spent";
 import { DateValue } from "@internationalized/date";
 import SpendingTable from "@/components/SpendingTable";
-import SpentForm from "@/components/SpentForm";
 import {
-  addSpending,
   calculateMonthSum,
   deleteSpending,
   editSpending,
@@ -28,11 +26,6 @@ export default function Month() {
   const [filteredSpending, setFilteredSpending] = useState<Spent[]>([]);
   const [selectedKeys, setSelectedKeys] = useState(new Set(["all"]));
   const [isDataChanged, setIsDataChanged] = useState(false);
-
-  const addSpent = useCallback(async (spent: Partial<Spent>) => {
-    await addSpending(spent);
-    setIsDataChanged((prev) => !prev);
-  }, []);
 
   const deleteSpent = useCallback(async (id: number) => {
     await deleteSpending(id);
@@ -133,7 +126,6 @@ export default function Month() {
         selectedKeys={selectedKeys}
         setSelectedKeys={setSelectedKeys}
       />
-      <SpentForm addSpent={addSpent} />
     </>
   );
 }

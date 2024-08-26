@@ -1,4 +1,5 @@
-import { ChangeEvent, useState } from "react";
+"use client";
+import { ChangeEvent, useCallback, useState } from "react";
 import { Button } from "@nextui-org/button";
 import { DatePicker, Input, Select, SelectItem } from "@nextui-org/react";
 import { Spent, SpentCategory } from "@/types/Spent";
@@ -8,23 +9,30 @@ import {
   parseDate,
   today,
 } from "@internationalized/date";
+import { addSpending, loadSpending } from "@/utils/utils";
+import { useDispatch, useSelector } from "react-redux";
+import { initialStateInterface, setSpending } from "@/lib/state/appSLice";
 
-interface spentFormProps {
-  addSpent: (spent: Partial<Spent>) => void;
-}
-
-export default function SpentForm({ addSpent }: spentFormProps) {
+export default function SpentForm({}) {
   const [formData, setFormData] = useState({
     subject: "Poison",
     date: today(getLocalTimeZone()).toString(),
     spent: "10",
     category: SpentCategory[0],
   });
+  const selectedDate = useSelector(
+    (state: initialStateInterface) => state.selectedDate,
+  );
+  const dispatch = useDispatch();
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
   }
+  const addSpent = useCallback(async (spent: Partial<Spent>) => {
+    await addSpending(spent);
+    dispatch(setSpending(await loadSpending(selectedDate)));
+  }, []);
 
   function handleAddSpent() {
     const newSpent = { ...formData };
@@ -46,7 +54,7 @@ export default function SpentForm({ addSpent }: spentFormProps) {
   }
 
   return (
-    <div className="border-1 p-4">
+    <div className="border-1 p-4 my-8">
       <div className="pb-2 flex flex-wrap md:flex-nowrap gap-4">
         <Input
           value={formData.spent}
